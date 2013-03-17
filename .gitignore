@@ -16,3 +16,8 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+
+.env
+tpb_data/
+node_modules/
