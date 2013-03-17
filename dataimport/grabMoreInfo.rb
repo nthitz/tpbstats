@@ -1,38 +1,8 @@
 require 'rubygems'
-require 'libxml'
 require 'net/http'
 require 'nokogiri'
 require 'pg'
 
-include LibXML
-class PostCallbacks
-  include XML::SaxParser::Callbacks
-
-  @newTorrent = Hash.new()
-  @lastNodeName = ""
-  @parsingComments = false
-  @curComments = Array.new()
-  @curComment = Hash.new()
-  def on_start_element(element, attributes)
-    if element == 'torrent'
-    	@newTorrent = Hash.new()
-   	end
-    @lastNodeName = element
-  end
-  def on_end_element(element)
-	if element == 'torrent'
-		
-		grabData @newTorrent
-		exit()
-	end
-  end
-  def on_characters(chars)
-	if chars == "\n"
-		return
-	end
-	@newTorrent[@lastNodeName] = chars
-  end
-end
 def grabData(torrent)
 	url = "/torrent/" + torrent['id'] + '/'
 	fullURL = 'http://thepiratebay.se' + url
@@ -82,7 +52,7 @@ def grabData(torrent)
 	puts pic
 
 end
-conn = PG.connect( dbname: 'tpb', host: 'localhost', user: 'postgres', password: 'serenitynow')
+$conn = PG.connect( dbname: ENV['DBNAME'], host: ENV['DBHOST'], user: ENV['DBUSER'], password: ENV['DBPASS'])
 
 parser = XML::SaxParser.file("tpb_data/poor.corrected.xml")
 parser.callbacks = PostCallbacks.new

@@ -161,7 +161,7 @@ var curComments = [];
 var curComment = null;
 =end
 
-$conn = PG.connect( dbname: 'tpb', host: 'localhost', user: 'postgres', password: 'serenitynow')
+$conn = PG.connect( dbname: ENV['DBNAME'], host: ENV['DBHOST'], user: ENV['DBUSER'], password: ENV['DBPASS'])
 $conn.exec('DELETE FROM comment')
 $conn.exec('DELETE FROM torrent')
 parser = XML::SaxParser.file("tpb_data/rich.corrected.xml")
