@@ -43,9 +43,9 @@ def grabData(torrent)
 	puts cat
 	user = doc.xpath('.//dd/a[starts-with(@href, "/user/")]')
 	user = user[0]['href']
-
-#	tags = doc.xpath('.//dd/a[starts-with(@href, "/tag/")]');
-#	puts tags[0].content
+	puts user
+	tags = doc.xpath('.//dd/a[starts-with(@href, "/tag/")]');
+	puts tags[0].content
 	pic = doc.css('[title="picture"]')
 	pic = pic[0]['src']
 	puts user
@@ -53,7 +53,10 @@ def grabData(torrent)
 
 end
 $conn = PG.connect( dbname: ENV['DBNAME'], host: ENV['DBHOST'], user: ENV['DBUSER'], password: ENV['DBPASS'])
-
-parser = XML::SaxParser.file("tpb_data/poor.corrected.xml")
-parser.callbacks = PostCallbacks.new
-parser.parse
+$conn.exec('SELECT tpb_id,title FROM torrent ORDER BY comment_count DESC LIMIT 1') do |result|
+	result.each do |row|
+		puts row
+		row['id'] = row['tpb_id']
+		grabData(row)
+	end
+end
